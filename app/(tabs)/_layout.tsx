@@ -1,35 +1,21 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
+        tabBarActiveTintColor: '#4a9eff',
+        tabBarInactiveTintColor: '#888',
+        tabBarStyle: { backgroundColor: '#0a1628', borderTopColor: '#1a2a3a' },
+        headerStyle: { backgroundColor: '#0a1628' },
+        headerTintColor: '#fff',
       }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: 'Home', tabBarLabel: 'Home' }} />
+      <Tabs.Screen name="explore" options={{ title: 'Dashboard', tabBarLabel: 'Dashboard' }} />
+      <Tabs.Screen name="tournament" options={{ title: 'Tournament', tabBarLabel: 'Tournament' }} />
+      <Tabs.Screen name="logcatch" options={{ title: 'Log Catch', tabBarLabel: 'Log Catch' }} />
+      <Tabs.Screen name="cull" options={{ title: 'Smart Cull', tabBarLabel: 'Smart Cull' }} />
+      <Tabs.Screen name="history" options={{ title: 'History', tabBarLabel: 'History' }} />
     </Tabs>
   );
 }

@@ -1,34 +1,35 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { router } from 'expo-router';
 
 export default function DashboardScreen() {
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>🎣 ReelTrack</Text>
+      <Text style={styles.header}>ReelTrack</Text>
       <Text style={styles.welcome}>Welcome back, Angler!</Text>
 
       <View style={styles.grid}>
-        <TouchableOpacity style={[styles.card, styles.cardBlue]}>
+        <TouchableOpacity style={[styles.card, styles.cardBlue]} onPress={() => router.push('/tournament')}>
           <Text style={styles.cardIcon}>🏆</Text>
           <Text style={styles.cardTitle}>Start Tournament</Text>
           <Text style={styles.cardSub}>Set up a new tournament</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.card, styles.cardGreen]}>
+        <TouchableOpacity style={[styles.card, styles.cardGreen]} onPress={() => router.push('/logcatch')}>
           <Text style={styles.cardIcon}>🐟</Text>
           <Text style={styles.cardTitle}>Log a Catch</Text>
           <Text style={styles.cardSub}>Record your fish</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.card, styles.cardPurple]}>
+        <TouchableOpacity style={[styles.card, styles.cardPurple]} onPress={() => router.push('/history')}>
           <Text style={styles.cardIcon}>📊</Text>
           <Text style={styles.cardTitle}>My History</Text>
           <Text style={styles.cardSub}>View past catches</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.card, styles.cardOrange]}>
-          <Text style={styles.cardIcon}>🤖</Text>
-          <Text style={styles.cardTitle}>AI Predictions</Text>
-          <Text style={styles.cardSub}>What's biting today</Text>
+        <TouchableOpacity style={[styles.card, styles.cardOrange]} onPress={() => router.push('/cull')}>
+          <Text style={styles.cardIcon}>🎯</Text>
+          <Text style={styles.cardTitle}>Smart Cull</Text>
+          <Text style={styles.cardSub}>Manage your livewell</Text>
         </TouchableOpacity>
       </View>
 

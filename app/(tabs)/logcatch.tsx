@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { supabase } from '@/lib/supabase';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 
 export default function LogCatchScreen() {
   const [species, setSpecies] = useState('Largemouth Bass');
@@ -10,8 +12,60 @@ export default function LogCatchScreen() {
   const [lure, setLure] = useState('');
   const [lake, setLake] = useState('');
   const [notes, setNotes] = useState('');
+  const [photo, setPhoto] = useState(null);
+  const [gps, setGps] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  async function captureGPS() {
+    try {
+      const permission = await Location.requestForegroundPermissionsAsync();
+      if (permission.granted) {
+        const location = await Location.getCurrentPositionAsync({});
+        setGps({
+          lat: location.coords.latitude,
+          lng: location.coords.longitude,
+        });
+      }
+    } catch (e) {
+      console.log('GPS error:', e);
+    }
+  }
+
+  async function takePhoto() {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      alert('Permission to use camera is required!');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+      captureGPS();
+    }
+  }
+
+  async function pickPhoto() {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      alert('Permission to access photos is required!');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+      captureGPS();
+    }
+  }
 
   async function handleSave() {
     if (!weightLb && !length) {
@@ -38,6 +92,8 @@ export default function LogCatchScreen() {
       setLength('');
       setLure('');
       setNotes('');
+      setPhoto(null);
+      setGps(null);
       setTimeout(() => setSaved(false), 3000);
     }
   }
@@ -73,6 +129,26 @@ export default function LogCatchScreen() {
       <Text style={styles.label}>Notes</Text>
       <TextInput style={[styles.input, styles.notesInput]} placeholder="Notes..." placeholderTextColor="#555" value={notes} onChangeText={setNotes} multiline />
 
+      <Text style={styles.label}>Photo — GPS auto-captures when photo is taken</Text>
+      <View style={styles.photoRow}>
+        <TouchableOpacity style={styles.photoBtn} onPress={takePhoto}>
+          <Text style={styles.photoBtnText}>Take Photo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.photoBtn} onPress={pickPhoto}>
+          <Text style={styles.photoBtnText}>Choose Photo</Text>
+        </TouchableOpacity>
+      </View>
+
+      {photo && (
+        <Image source={{ uri: photo }} style={styles.photoPreview} />
+      )}
+
+      {gps && (
+        <View style={styles.gpsBox}>
+          <Text style={styles.gpsText}>GPS captured: {gps.lat.toFixed(4)}, {gps.lng.toFixed(4)}</Text>
+        </View>
+      )}
+
       <TouchableOpacity style={styles.button} onPress={handleSave} disabled={saving}>
         <Text style={styles.buttonText}>{saving ? 'Saving...' : 'Save Catch'}</Text>
       </TouchableOpacity>
@@ -92,4 +168,10 @@ const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   successBox: { backgroundColor: '#1a3a2a', borderWidth: 2, borderColor: '#2ecc71', borderRadius: 10, padding: 16, marginBottom: 16 },
   successText: { color: '#2ecc71', fontSize: 16, fontWeight: 'bold', textAlign: 'center' },
+  photoRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
+  photoBtn: { flex: 1, backgroundColor: '#1a2a3a', padding: 12, borderRadius: 10, alignItems: 'center' },
+  photoBtnText: { color: '#4a9eff', fontSize: 13, fontWeight: 'bold' },
+  photoPreview: { width: '100%', height: 200, borderRadius: 10, marginTop: 12 },
+  gpsBox: { backgroundColor: '#1a2a3a', padding: 12, borderRadius: 10, marginTop: 8 },
+  gpsText: { color: '#2ecc71', fontSize: 14, textAlign: 'center' },
 });
