@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { supabase } from '@/lib/supabase';
 
 export default function TournamentScreen() {
   const [tournamentName, setTournamentName] = useState('');
@@ -12,18 +13,45 @@ export default function TournamentScreen() {
   const [fishLimit, setFishLimit] = useState('5');
   const [minLength, setMinLength] = useState('12');
   const [useWeight, setUseWeight] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
-  function handleStart() {
+  async function handleStart() {
     if (!tournamentName || !lakeName || !angler1) {
       alert('Please fill in Tournament Name, Lake, and at least Angler 1');
       return;
     }
-    alert('Tournament Started! Good luck on the water!');
+    setSaving(true);
+    const { error } = await supabase.from('tournaments').insert({
+      name: tournamentName,
+      lake: lakeName,
+      boat_number: boatNumber,
+      angler1,
+      angler2,
+      takeoff_time: takeoffTime,
+      checkin_time: checkInTime,
+      fish_limit: parseInt(fishLimit) || 5,
+      min_length: parseFloat(minLength) || 12,
+      scoring_type: useWeight ? 'weight' : 'length',
+    });
+    setSaving(false);
+    if (error) {
+      alert('Error saving: ' + error.message);
+    } else {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    }
   }
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>🏆 Tournament Setup</Text>
+      <Text style={styles.header}>Tournament Setup</Text>
+
+      {saved && (
+        <View style={styles.successBox}>
+          <Text style={styles.successText}>Tournament saved! Good luck on the water!</Text>
+        </View>
+      )}
 
       <Text style={styles.label}>Tournament Name</Text>
       <TextInput style={styles.input} placeholder="e.g. Spring Bass Classic" placeholderTextColor="#555" value={tournamentName} onChangeText={setTournamentName} />
@@ -57,17 +85,17 @@ export default function TournamentScreen() {
         <TouchableOpacity
           style={[styles.toggleBtn, useWeight && styles.toggleActive]}
           onPress={() => setUseWeight(true)}>
-          <Text style={[styles.toggleText, useWeight && styles.toggleTextActive]}>⚖️ Weight</Text>
+          <Text style={[styles.toggleText, useWeight && styles.toggleTextActive]}>Weight</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.toggleBtn, !useWeight && styles.toggleActive]}
           onPress={() => setUseWeight(false)}>
-          <Text style={[styles.toggleText, !useWeight && styles.toggleTextActive]}>📏 Length</Text>
+          <Text style={[styles.toggleText, !useWeight && styles.toggleTextActive]}>Length</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleStart}>
-        <Text style={styles.buttonText}>🎣 Start Tournament</Text>
+      <TouchableOpacity style={styles.button} onPress={handleStart} disabled={saving}>
+        <Text style={styles.buttonText}>{saving ? 'Saving...' : 'Start Tournament'}</Text>
       </TouchableOpacity>
 
       <View style={{ height: 40 }} />
@@ -87,4 +115,6 @@ const styles = StyleSheet.create({
   toggleTextActive: { color: '#fff' },
   button: { backgroundColor: '#4a9eff', padding: 16, borderRadius: 10, alignItems: 'center', marginTop: 24 },
   buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  successBox: { backgroundColor: '#1a3a5c', borderWidth: 2, borderColor: '#4a9eff', borderRadius: 10, padding: 16, marginBottom: 16 },
+  successText: { color: '#4a9eff', fontSize: 16, fontWeight: 'bold', textAlign: 'center' },
 });
