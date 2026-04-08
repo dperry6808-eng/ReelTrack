@@ -13,6 +13,7 @@ export default function LogCatchScreen() {
   const [lake, setLake] = useState("");
   const [notes, setNotes] = useState("");
   const [weather, setWeather] = useState("");
+const [waterClarity, setWaterClarity] = useState("");
   const [waterTemp, setWaterTemp] = useState("");
   const [photo, setPhoto] = useState(null);
   const [gps, setGps] = useState(null);
@@ -80,7 +81,15 @@ export default function LogCatchScreen() {
       <TextInput style={styles.input} placeholder="Lure name and color" placeholderTextColor="#555" value={lure} onChangeText={setLure} />
       <Text style={styles.label}>Water Temp</Text>
       <TextInput style={styles.input} placeholder="e.g. 68" placeholderTextColor="#555" value={waterTemp} onChangeText={setWaterTemp} keyboardType="numeric" />
-      <Text style={styles.label}>Weather</Text>
+      <Text style={styles.label}>Water Clarity</Text>
+      <View style={styles.chipRow}>
+        {["Muddy <1ft", "Stained 1-4ft", "Clear >4ft"].map(c => (
+          <TouchableOpacity key={c} style={[styles.chip, waterClarity === c && styles.chipActive]} onPress={() => setWaterClarity(c)}>
+            <Text style={[styles.chipText, waterClarity === c && styles.chipTextActive]}>{c}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+<Text style={styles.label}>Weather</Text>
       <View style={styles.chipRow}>
         {weatherOptions.map(w => (
           <TouchableOpacity key={w} style={[styles.chip, weather === w && styles.chipActive]} onPress={() => setWeather(w)}>
