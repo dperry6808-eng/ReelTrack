@@ -11,11 +11,12 @@ export default function TabLayout() {
         headerTintColor: '#fff',
       }}>
       <Tabs.Screen name="index" options={{ title: 'Home', tabBarLabel: 'Home' }} />
-      <Tabs.Screen name="explore" options={{ title: 'Dashboard', tabBarLabel: 'Dashboard' }} />
       <Tabs.Screen name="tournament" options={{ title: 'Tournament', tabBarLabel: 'Tournament' }} />
       <Tabs.Screen name="logcatch" options={{ title: 'Log Catch', tabBarLabel: 'Log Catch' }} />
-      <Tabs.Screen name="cull" options={{ title: 'Smart Cull', tabBarLabel: 'Smart Cull' }} />
+      <Tabs.Screen name="today" options={{ title: 'Today', tabBarLabel: 'Today' }} />
       <Tabs.Screen name="history" options={{ title: 'History', tabBarLabel: 'History' }} />
+      <Tabs.Screen name="explore" options={{ href: null }} />
+      <Tabs.Screen name="cull" options={{ href: null }} />
     </Tabs>
   );
 }
