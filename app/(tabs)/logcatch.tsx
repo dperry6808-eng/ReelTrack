@@ -59,6 +59,10 @@ export default function LogCatchScreen() {
   const [showResetWarning, setShowResetWarning] = useState(false);
   const [catchTime, setCatchTime] = useState("");
   const [useCustomTime, setUseCustomTime] = useState(false);
+  const [windSpeed, setWindSpeed] = useState("");
+  const [waterLevel, setWaterLevel] = useState("");
+  const [waterLevelFeet, setWaterLevelFeet] = useState("");
+  const [waterLevelDir, setWaterLevelDir] = useState("Normal");
 
   const limit = 5;
   const weatherOptions = ["Sunny", "Partly Cloudy", "Cloudy", "Rainy", "Foggy", "Windy"];
@@ -232,6 +236,7 @@ export default function LogCatchScreen() {
     setWeightLb(""); setWeightOz(""); setLength(""); setNotes(""); setPhoto(null); setGps(null);
     setWeather(""); setWaterClarity(""); setDepth(""); setStructure("");
     setLure(""); setSpecies(""); setLake("");
+    setWindSpeed(""); setWaterLevel(""); setWaterLevelFeet(""); setWaterLevelDir("Normal");
   }
 
   function handleTournamentToggle() {
@@ -334,6 +339,7 @@ export default function LogCatchScreen() {
     const catchData = {
       species, weight_lb: lb, weight_oz: oz, length: len, lure, lake, notes, weather,
       water_clarity: waterClarity, water_temp: waterTemp, depth, structure,
+      wind_speed: windSpeed, water_level: waterLevel,
       latitude: gps ? gps.lat : null, longitude: gps ? gps.lng : null,
       is_tournament: isTournament, cull_status: cullStatus, cull_tag: cullTag,
       release_reason: releaseReason, photo_url: photoUrl, created_at: localISO,
@@ -547,6 +553,56 @@ export default function LogCatchScreen() {
       <Text style={styles.label}>Water Temp (F)</Text>
       <TextInput style={styles.input} placeholder="e.g. 68" placeholderTextColor="#555" value={waterTemp} onChangeText={setWaterTemp} keyboardType="numeric" />
 
+      <Text style={styles.label}>Wind Speed (mph)</Text>
+      <TextInput style={styles.input} placeholder="e.g. 10" placeholderTextColor="#555" value={windSpeed} onChangeText={setWindSpeed} keyboardType="numeric" />
+
+      <Text style={styles.label}>Water Level</Text>
+      <View style={styles.chipRow}>
+        {["Normal", "Steady"].map(w => (
+          <TouchableOpacity key={w} style={[styles.chip, waterLevelDir === w && styles.chipActive]} onPress={() => {
+            setWaterLevelDir(w); setWaterLevelFeet("");
+            setWaterLevel(w);
+          }}>
+            <Text style={[styles.chipText, waterLevelDir === w && styles.chipTextActive]}>{w}</Text>
+          </TouchableOpacity>
+        ))}
+        {["Rising", "Falling"].map(w => (
+          <TouchableOpacity key={w} style={[styles.chip, waterLevelDir === w && styles.chipActive]} onPress={() => {
+            setWaterLevelDir(w);
+            setWaterLevel(waterLevelFeet ? waterLevelFeet + "' " + w : w);
+          }}>
+            <Text style={[styles.chipText, waterLevelDir === w && styles.chipTextActive]}>{w}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={styles.waterLevelRow}>
+        <TouchableOpacity style={[styles.chip, waterLevelDir === "Low" && styles.chipActive]} onPress={() => {
+          setWaterLevelDir("Low");
+          setWaterLevel(waterLevelFeet ? waterLevelFeet + "' Low" : "Low");
+        }}>
+          <Text style={[styles.chipText, waterLevelDir === "Low" && styles.chipTextActive]}>Low</Text>
+        </TouchableOpacity>
+        <TextInput
+          style={[styles.input, styles.waterLevelInput]}
+          placeholder="0.0"
+          placeholderTextColor="#555"
+          value={waterLevelFeet}
+          onChangeText={val => {
+            setWaterLevelFeet(val);
+            setWaterLevel(val ? val + "' " + waterLevelDir : waterLevelDir);
+          }}
+          keyboardType="numeric"
+        />
+        <Text style={styles.waterLevelFt}>ft</Text>
+        <TouchableOpacity style={[styles.chip, waterLevelDir === "High" && styles.chipActive]} onPress={() => {
+          setWaterLevelDir("High");
+          setWaterLevel(waterLevelFeet ? waterLevelFeet + "' High" : "High");
+        }}>
+          <Text style={[styles.chipText, waterLevelDir === "High" && styles.chipTextActive]}>High</Text>
+        </TouchableOpacity>
+      </View>
+      {waterLevel ? <Text style={styles.waterLevelPreview}>Saving as: {waterLevel}</Text> : null}
+
       <Text style={styles.label}>Water Clarity</Text>
       <View style={styles.chipRow}>
         {["Muddy <1ft", "Stained 1-4ft", "Clear >4ft"].map(c => (
@@ -737,6 +793,10 @@ const styles = StyleSheet.create({
   resetButton: { backgroundColor: "#e74c3c", padding: 14, borderRadius: 10, alignItems: "center", marginTop: 16 },
   resetText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   timeRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 12 },
+  waterLevelRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 4 },
+  waterLevelInput: { width: 70, textAlign: "center" },
+  waterLevelFt: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  waterLevelPreview: { color: "#2ecc71", fontSize: 12, marginTop: 4, fontStyle: "italic" },
   timeHint: { color: "#888", fontSize: 12, marginBottom: 8, fontStyle: "italic" },
   timePickerBox: { backgroundColor: "#1a2a3a", borderRadius: 10, padding: 12, marginTop: 4 },
   timePickerRow: { flexDirection: "row", alignItems: "center", gap: 8 },
