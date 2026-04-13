@@ -1,4 +1,3 @@
-
 import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import { Image, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -140,6 +139,10 @@ export default function TodayScreen() {
       text += '━━━━━━━━━━━━━━━━━━\n';
     }
     if (topLure) text += '🎣 Top Lure: ' + topLure[0] + ' (' + topLure[1] + ' fish)\n';
+    const windSpeeds = catches.filter(c => c.wind_speed).map(c => c.wind_speed);
+    if (windSpeeds.length > 0) text += '💨 Wind: ' + windSpeeds[0] + ' mph\n';
+    const waterLevels = catches.filter(c => c.water_level).map(c => c.water_level);
+    if (waterLevels.length > 0) text += '🌊 Water Level: ' + waterLevels[0] + '\n';
     if (biggestFish) text += '🏅 Big Fish: ' + formatWeight(biggestFish.weight_lb, biggestFish.weight_oz) + '\n';
     text += '\nLogged with ReelTrack 🎣';
 
@@ -261,6 +264,8 @@ export default function TodayScreen() {
                     <Text style={styles.fishSpecies}>{f.species || 'Unknown'}</Text>
                     {f.lure && <Text style={styles.fishDetail}>🎣 {f.lure}</Text>}
                     {f.structure && <Text style={styles.fishDetail}>🏞 {f.structure}</Text>}
+                    {f.wind_speed && <Text style={styles.fishDetail}>💨 {f.wind_speed} mph</Text>}
+                    {f.water_level && <Text style={styles.fishDetail}>🌊 {f.water_level}</Text>}
                   </View>
                 </View>
               ))}
@@ -308,6 +313,8 @@ export default function TodayScreen() {
                 <Text style={styles.catchSpecies}>{c.species || 'Unknown'}</Text>
                 <Text style={styles.catchWeight}>{formatWeight(c.weight_lb, c.weight_oz)}</Text>
                 {c.lure && <Text style={styles.catchDetail}>{c.lure}</Text>}
+              {c.wind_speed && <Text style={styles.catchDetail}>💨 {c.wind_speed} mph</Text>}
+              {c.water_level && <Text style={styles.catchDetail}>🌊 {c.water_level}</Text>}
               </View>
               {c.cull_status && (
                 <View style={[styles.catchBadge, {
