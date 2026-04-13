@@ -216,6 +216,8 @@ export default function HistoryScreen() {
                   <View style={styles.detailItem}><Text style={styles.detailLabel}>Water Temp</Text><Text style={styles.detailValue}>{selectedCatch.water_temp ? selectedCatch.water_temp + '°F' : 'N/A'}</Text></View>
                   <View style={styles.detailItem}><Text style={styles.detailLabel}>Water Clarity</Text><Text style={styles.detailValue}>{selectedCatch.water_clarity || 'N/A'}</Text></View>
                   <View style={styles.detailItem}><Text style={styles.detailLabel}>GPS</Text><Text style={styles.detailValue}>{selectedCatch.latitude ? selectedCatch.latitude.toFixed(4) + ', ' + selectedCatch.longitude.toFixed(4) : 'N/A'}</Text></View>
+                  <View style={styles.detailItem}><Text style={styles.detailLabel}>Wind Speed</Text><Text style={styles.detailValue}>{selectedCatch.wind_speed ? selectedCatch.wind_speed + ' mph' : 'N/A'}</Text></View>
+                  <View style={styles.detailItem}><Text style={styles.detailLabel}>Water Level</Text><Text style={styles.detailValue}>{selectedCatch.water_level || 'N/A'}</Text></View>
                 </View>
                 {selectedCatch.notes && (
                   <View style={styles.detailNotes}>
@@ -447,6 +449,8 @@ export default function HistoryScreen() {
             {c.weather && <Text style={styles.detail}>🌤 {c.weather}</Text>}
             {c.water_clarity && <Text style={styles.detail}>💧 {c.water_clarity}</Text>}
             {c.water_temp && <Text style={styles.detail}>🌡 {c.water_temp}°F</Text>}
+            {c.wind_speed && <Text style={styles.detail}>💨 {c.wind_speed} mph</Text>}
+            {c.water_level && <Text style={styles.detail}>🌊 {c.water_level}</Text>}
           </View>
           {c.notes && <Text style={styles.notes}>"{c.notes}"</Text>}
           <Text style={styles.tapHint}>Tap to view • edit • delete</Text>
