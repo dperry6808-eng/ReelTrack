@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import TournamentResults from './tournament_results';
 
 export default function TournamentScreen() {
   const [tournamentName, setTournamentName] = useState('');
@@ -26,6 +27,8 @@ export default function TournamentScreen() {
   // Active tournament
   const [activeTournament, setActiveTournament] = useState(null);
   const [showEndWarning, setShowEndWarning] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [endedTournament, setEndedTournament] = useState(null);
 
   useEffect(() => {
     loadLakes();
@@ -103,9 +106,16 @@ export default function TournamentScreen() {
   }
 
   async function handleEndTournament() {
+    const ended = activeTournament;
     await supabase.from('tournaments').update({ is_active: false }).eq('id', activeTournament.id);
     setActiveTournament(null);
     setShowEndWarning(false);
+    setEndedTournament(ended);
+    setShowResults(true);
+  }
+
+  if (showResults && endedTournament) {
+    return <TournamentResults tournament={endedTournament} onClose={() => { setShowResults(false); setEndedTournament(null); }} />;
   }
 
   return (
